@@ -2,10 +2,15 @@ from flask import Flask
 from flask_restful import Api
 from app.views import Questions,SingleQuestion,PostAnswer
 from app.views import UserSignup, UserLogin
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity
+)
 
 app = Flask(__name__)
 
-app.secret_key = "sharifah"
+app.config['JWT_SECRET_KEY'] = 'sharifah' 
+jwt = JWTManager(app)
 
 
 """initializing an API"""

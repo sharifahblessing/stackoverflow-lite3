@@ -24,7 +24,7 @@ class Question_model:
         self.body = body
         self.tag = tag
         self.postedby = postedby
-        self.time = time
+        
 
     def my_json(self):
         return json.dumps({
@@ -33,7 +33,7 @@ class Question_model:
             'body':self.body,
             'tag':self.tag,
             'postedby':self.postedby,
-            'time':self.time
+            
         })
 
 

@@ -18,7 +18,7 @@ class Database:
         create_table = "CREATE TABLE IF NOT EXISTS questionstable\
         (questionid SERIAL PRIMARY KEY, user_id INTEGER NOT NULL, \
         FOREIGN KEY (user_id) REFERENCES userstable (user_id) ON UPDATE CASCADE ON DELETE CASCADE,\
-        title VARCHAR(255), body VARCHAR(255), posted_at TIMESTAMP DEFAULT NOW())"
+        title VARCHAR(255), body VARCHAR,tag VARCHAR(255), posted_at TIMESTAMP DEFAULT NOW())"
         self.cursor.execute(create_table)
 
         create_table = "CREATE TABLE IF NOT EXISTS answerstable\
@@ -44,6 +44,7 @@ class Database:
         self.cursor.execute(fetch_cmd)
         result = self.cursor.fetchone()
         return result
+        
 
     def get_all(self, table):
         fetchall_cmd = "SELECT * FROM {} ;".format(table)
