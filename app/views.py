@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, \
     check_password_hash
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
-    get_jwt_identity
+    get_jwt_identity,create_refresh_token
 )
 import datetime
 from flask_restful import Resource, Api, reqparse
@@ -85,15 +85,18 @@ class UserLogin(Resource):
             print(check_password_hash(user_obj.password, password))
                     
             if  check_password_hash(user_obj.password, password):
-                access_token = create_access_token(identity=username)
-   
+                access_token = create_access_token(identity=query_user[0],fresh=True)
+                
                 return make_response(jsonify({"message": "Login successful",
-                                            "accesstoken": access_token }),200)
+                                            "accesstoken": access_token,
+                                            
+                                             }),200)
         return make_response(jsonify({"message": "User does not exist please signup first"}),
                              404)
 
 class Questions (Resource):
     """"method for posting a question"""
+    @jwt_required
     def post(self):
         parser= reqparse.RequestParser()
 
@@ -110,6 +113,13 @@ class Questions (Resource):
         title = str(argument['title']).strip()
         body = argument['body']
         tag = argument['tag']
+
+       
+        # if not access_token:
+        #     return make_response(jsonify({
+        #         'message':'token missing'
+        #     }),400)
+
                                         
         """Query database to check whether question exits"""
         check_question = db.get_by_parameter('questionstable','title',title)
@@ -140,9 +150,11 @@ class Questions (Resource):
             'message':'Tag is needed for this question to be posted'  
                 }
             ),400)
-        
+        """ implementing token decoding"""
+        current_user = get_jwt_identity()
+
         """insert into the database"""
-        db.insert_question_data(title,body,tag)
+        db.insert_question_data(current_user, title,body,tag)
        
         return make_response(jsonify(
                 {
@@ -153,9 +165,7 @@ class Questions (Resource):
        
     def get(self):
         db_questions = db.get_all('questionstable')
-        #interating through the questions
-        db_questions = (questionstable)
-
+        
         questions_list =[]
         questions_list.append(db_questions)
         for question in db_questions:
@@ -185,7 +195,7 @@ class SingleQuestion(Resource):
 
 
 class PostAnswer(Resource):
-    
+    @jwt_required
     def post(self,questionId):
 
         parser= reqparse.RequestParser()

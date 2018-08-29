@@ -16,7 +16,7 @@ class Database:
         self.cursor.execute(create_table)
 
         create_table = "CREATE TABLE IF NOT EXISTS questionstable\
-        (questionid SERIAL PRIMARY KEY, user_id INTEGER NOT NULL, \
+        (questionid SERIAL PRIMARY KEY, user_id INTEGER, \
         FOREIGN KEY (user_id) REFERENCES userstable (user_id) ON UPDATE CASCADE ON DELETE CASCADE,\
         title VARCHAR(255), body VARCHAR,tag VARCHAR(255), posted_at TIMESTAMP DEFAULT NOW())"
         self.cursor.execute(create_table)
@@ -50,11 +50,13 @@ class Database:
         fetchall_cmd = "SELECT * FROM {} ;".format(table)
         self.cursor.execute(fetchall_cmd)
         result = self.cursor.fetchall()
-        return result
+        if result:
+            return result
+        return "Empty table"
         
-    def insert_question_data(self,title, body, tag ):
+    def insert_question_data(self, user_id, title, body, tag):
         """insert question"""
-        insertquestion_cmd = "INSERT INTO questionstable (title, body, tag) VALUES\
-         ('{}', '{}', '{}');".format(title, body,  tag)
+        insertquestion_cmd = "INSERT INTO questionstable (user_id,title, body, tag) VALUES\
+         ('{}','{}', '{}', '{}');".format(user_id, title, body,  tag)
         self.cursor.execute(insertquestion_cmd )
         self.connection.commit()
