@@ -198,20 +198,21 @@ class SingleQuestion(Resource):
         return question_dict, 200
 
     @jwt_required
-    def delete(self,user_id,questionId):
+    def delete(self,questionId):
         current_user = get_jwt_identity()
-        db.get_by_parameter('questionstable','user_id',user_id)
-    if current_user ==
+    #     db.get_by_parameter('questionstable','user_id',user_id)
+    # if current_user ==
 
-        db.delete_question(current_user,questionId)
+        if db.delete_question(current_user,questionId):
+            return{
+                "message":"delete successful"
+            }
+        return{"message":"delete error"}
 
         # db.get_by_parameter('questionstable','user_id',user_id)
         # if user_id == current_user:
-            
+                  
 
-              
-        
-        
       
        
 class PostAnswer(Resource):
