@@ -69,14 +69,6 @@ class UserLogin(Resource):
         password = str(argument['password']).strip()
 
 
-       # if username == "" or len(username) < 3:
-        #    return make_response(jsonify({"message": "invalid username, Enter correct username please"}),
-                            # 400)
-
-        #if password == "" or password == " " or len(password) < 3:
-           # return make_response(jsonify({"message": "Password should be morethan 3 characters"}),
-                             #400)
-
         query_user = db.get_by_parameter('userstable','username',username)
         print(query_user)
         if  query_user:
@@ -114,13 +106,6 @@ class Questions (Resource):
         title = str(argument['title']).strip()
         body = argument['body']
         tag = argument['tag']
-
-       
-        # if not access_token:
-        #     return make_response(jsonify({
-        #         'message':'token missing'
-        #     }),400)
-
                                         
         """Query database to check whether question exits"""
         check_question = db.get_by_parameter('questionstable','title',title)
@@ -167,101 +152,121 @@ class Questions (Resource):
     def get(self):
         db_questions = db.get_all('questionstable')
         
-        questions_list =[]
-        for question in db_questions:
-            question_dict = dict()
-            question_dict["question_id"] = question[0]
-            question_dict["user_id"]=question[1]
-            question_dict["title"]=question[2]
-            question_dict["body"]=str(question[3])
-            question_dict["tag"]=str(question[5])
-            question_dict["posted at"]=str(question[4]) 
-            questions_list.append(question_dict)
+        if db_questions:
+            questions_list =[]
+            for question in db_questions:
+                question_dict = dict()
+                question_dict["question_id"] = question[0]
+                question_dict["user_id"]=question[1]
+                question_dict["title"]=question[2]
+                question_dict["body"]=str(question[3])
+                question_dict["tag"]=str(question[5])
+                question_dict["posted at"]=str(question[4]) 
+                questions_list.append(question_dict)
 
-        return questions_list,200
-
+            return questions_list,200
+        return make_response(jsonify({'message':'No questions yet'}),404)
 
 class SingleQuestion(Resource):
     
     def get(self,questionId):
         
         question_data = db.get_by_parameter('questionstable','questionid',questionId)
+        if question_data:
               
-        question_dict = dict()
-        question_dict["question_id"] = question_data[0]
-        question_dict["user_id"]=question_data[1]
-        question_dict["title"]=question_data[2]
-        question_dict["body"]=question_data[3]
-        question_dict["tag"]=question_data[5]
-        question_dict["posted at"]=str(question_data[4])
-       
-        return question_dict, 200
-
+            question_dict = dict()
+            question_dict["question_id"] = question_data[0]
+            question_dict["user_id"]=question_data[1]
+            question_dict["title"]=question_data[2]
+            question_dict["body"]=question_data[3]
+            question_dict["tag"]=question_data[5]
+            question_dict["posted at"]=str(question_data[4])
+        
+            return question_dict, 200
+        return make_response(jsonify({'message':'question doesnot exist'}),404)
     @jwt_required
     def delete(self,questionId):
-        current_user = get_jwt_identity()
-    #     db.get_by_parameter('questionstable','user_id',user_id)
-    # if current_user ==
-
+        current_user = get_jwt_identity()    
         if db.delete_question(current_user,questionId):
             return{
                 "message":"delete successful"
             }
         return{"message":"delete error"}
 
-        # db.get_by_parameter('questionstable','user_id',user_id)
-        # if user_id == current_user:
-                  
-
-      
        
 class PostAnswer(Resource):
-    @jwt_required
-    def post(self,questionId):
-
+    @jwt_required    
+    def post(self,questionId): 
+        get_jwt_identity()        
+              
         parser= reqparse.RequestParser()
-        """collecting arguments"""
-        parser.add_argument('answerid',type=int,required=True)
-        parser.add_argument('content',type=str,required=True)
-        
 
+        """collecting arguments"""
+        parser.add_argument('content',required=True)
+       
         """getting specific arguments"""
 
-        argument = parser.parse_args()
-
-        answerid = argument['answerid']
-        content = argument['content']
-
-        """checking whether the empty answerid feild"""
-       
-        
-        """checking whether the content answerid feild"""
+        argument = parser.parse_args()        
+        content = argument['content']     
+         
+        """Query database to check whether answer exits"""
+        check_answer = db.get_by_parameter('answerstable','content',content)
+        if  check_answer:
+             return make_response(jsonify(
+            {
+            'message':'This answer already exists'}
+            ),409)
         if  not content:
             return make_response(jsonify(
         {
             'message':'The content is needed for this answer to be posted'  
         }
-            ),400)
+            ),400)  
 
-        for our_list in questions_list:
-            if int(questionId) == int (our_list['questionid']):
+        """get a user via the question """
+        user_via_question = db.get_by_parameter('questionstable','questionid',questionId)
+
+        question_dict = dict()
+        """get a user id """
+        question_dict["user_id"]= user_via_question[1]
+        user_id = question_dict["user_id"]
+
+        """insert into the database"""
+        db.insert_answer_data(user_id,questionId,content)
+       
+        return make_response(jsonify(
+                {
+                'message':'Answer created successfully'}
+                
+            ),201)
+        
+class UpdateAnswer(Resource):
+
+    @jwt_required 
+    def put(self,questionId,answerId):
+
+
+        get_jwt_identity()
+          
               
-                """creating an object"""
-                answerobj = Answer_model(answerid,content,questionId)
+        parser= reqparse.RequestParser()
 
-                """convert object to JSON"""
-                convert_answerobj_data = json.loads(answerobj.my_json())
+        """collecting arguments"""
+        parser.add_argument('content',required=True)
+       
+        """getting specific arguments"""
 
-                """insert into the list"""
-                answers_list.append(convert_answerobj_data)
-                return {'message': 'answer posted successfully.'}, 201
-
-            return make_response(jsonify({
-            'message':'Sorry the question does not exist'
-        }),404)
-
-
-
+        argument = parser.parse_args()        
+        content = argument['content']     
+  
+        """insert into the database"""
+        db.update_answer_data(answerId, questionId,content)
+       
+        return make_response(jsonify(
+                {
+                'message':'Answer  updated  successfully'}
+                
+            ),201)
 
         
 

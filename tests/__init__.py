@@ -9,22 +9,10 @@ from app.views import questions_list,answers_list
 
 
 class BaseTestCase(unittest.TestCase):
-    def create_app(self):
-        """
-        Create an instance of the app with the testing configuration
-        """
-        app.config.from_object(app_config["testing"])
-        return app
+    
 
-    def setUp(self):
-        self.client = app.test_client(self)
 
-    def tearDown(self):
-        """
-        Drop the data structure data
-        """
-        questions_list[:] = []
-        answers_list[:] = []
+    
 
     def add_question(self, questionid, title, body,tag, postedby):
         """

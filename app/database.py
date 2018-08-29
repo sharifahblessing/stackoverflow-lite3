@@ -52,7 +52,7 @@ class Database:
         result = self.cursor.fetchall()
         if result:
             return result
-        return "Empty table"
+        return None
         
     def insert_question_data(self, user_id, title, body, tag):
         """insert question"""
@@ -63,12 +63,27 @@ class Database:
 
     def delete_question(self,owner,questionid):
         """delete question"""
-        selected_quest ="SELECT * FROM questionstable WHERE questionid=%s;"
-        selected_quest=self.cursor.execute(selected_quest,[questionid])
-        author_id = selected_quest[1]
+        selected_quest_statement ="SELECT * FROM questionstable WHERE questionid={};".format(questionid)
+        self.cursor.execute(selected_quest_statement)
+        selected_quest=self.cursor.fetchone()
+        self.connection.commit()
+        author_id = selected_quest[1]        
         if author_id == owner:
             deletequestion_cmd = "DELETE FROM questionstable WHERE questionid='{}';".format(questionid)
             self.cursor.execute(deletequestion_cmd)
             self.connection.commit()
             return True
         return False
+    def insert_answer_data(self,user_id, questionid, content):
+        """insert question"""
+        insertquestion_cmd = "INSERT INTO answerstable (user_id,questionid,content) VALUES\
+         ('{}', '{}', '{}');".format( user_id, questionid,  content)
+        self.cursor.execute(insertquestion_cmd )
+        self.connection.commit()
+    
+    def update_answer_data(self,answer_ID, questionid,content):
+
+        """insert question"""
+        insertquestion_cmd = "UPDATE  answerstable SET content='{}' where questionid='{}' and answer_id='{}';".format(content,questionid, answer_ID)
+        self.cursor.execute(insertquestion_cmd )
+        self.connection.commit();
