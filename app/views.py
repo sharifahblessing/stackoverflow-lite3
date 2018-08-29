@@ -1,3 +1,4 @@
+import datetime
 from flask import Flask, jsonify, make_response
 from werkzeug.security import generate_password_hash, \
     check_password_hash
@@ -5,7 +6,7 @@ from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     get_jwt_identity,create_refresh_token
 )
-import datetime
+
 from flask_restful import Resource, Api, reqparse
 from datetime import datetime, timedelta
 from app.models import User_model, Question_model, Answer_model
@@ -167,33 +168,52 @@ class Questions (Resource):
         db_questions = db.get_all('questionstable')
         
         questions_list =[]
-        questions_list.append(db_questions)
         for question in db_questions:
-            Question_model(*questions)
-            return {'questions':Question_model(*questions)},200
+            question_dict = dict()
+            question_dict["question_id"] = question[0]
+            question_dict["user_id"]=question[1]
+            question_dict["title"]=question[2]
+            question_dict["body"]=str(question[3])
+            question_dict["tag"]=str(question[5])
+            question_dict["posted at"]=str(question[4]) 
+            questions_list.append(question_dict)
+
+        return questions_list,200
 
 
 class SingleQuestion(Resource):
-
+    
     def get(self,questionId):
+        
+        question_data = db.get_by_parameter('questionstable','questionid',questionId)
+              
+        question_dict = dict()
+        question_dict["question_id"] = question_data[0]
+        question_dict["user_id"]=question_data[1]
+        question_dict["title"]=question_data[2]
+        question_dict["body"]=question_data[3]
+        question_dict["tag"]=question_data[5]
+        question_dict["posted at"]=str(question_data[4])
+       
+        return question_dict, 200
 
-        for our_list in questions_list:
-            if int(questionId) == int (our_list['questionid']):
-                final_data = {
-                    'questionid' : our_list['questionid'],
-                    'title':our_list['title'],
-                    'body':our_list['body'],
-                    'tag':our_list['tag'],
-                    'time':our_list['time'],
-                    'postedby':our_list['postedby']
-                }
-                return {'question': final_data}, 200
+    @jwt_required
+    def delete(self,user_id,questionId):
+        current_user = get_jwt_identity()
+        db.get_by_parameter('questionstable','user_id',user_id)
+    if current_user ==
 
-        return make_response(jsonify({
-            'message':'Sorry the question does not exist'
-        }),404)
+        db.delete_question(current_user,questionId)
 
+        # db.get_by_parameter('questionstable','user_id',user_id)
+        # if user_id == current_user:
+            
 
+              
+        
+        
+      
+       
 class PostAnswer(Resource):
     @jwt_required
     def post(self,questionId):

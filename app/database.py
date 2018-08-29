@@ -60,3 +60,10 @@ class Database:
          ('{}','{}', '{}', '{}');".format(user_id, title, body,  tag)
         self.cursor.execute(insertquestion_cmd )
         self.connection.commit()
+
+    def delete_question(self,user_id,questionid):
+        """delete question"""
+        deletequestion_cmd = "DELETE FROM questionstable WHERE questionid='{}';".format(questionid)
+        self.cursor.execute(deletequestion_cmd)
+        self.connection.commit()
+        return True

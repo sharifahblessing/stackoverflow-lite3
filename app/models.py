@@ -18,12 +18,12 @@ class User_model:
         })
 
 class Question_model:
-    def __init__(self, questionid, title, body, tag, postedby, time):
+    def __init__(self, questionid, title, body, tag, time):
         self.questionid = questionid
         self.title = title
         self.body = body
         self.tag = tag
-        self.postedby = postedby
+        
         
 
     def my_json(self):
@@ -32,7 +32,7 @@ class Question_model:
             'title':self.title,
             'body':self.body,
             'tag':self.tag,
-            'postedby':self.postedby,
+        
             
         })
 
