@@ -1,10 +1,7 @@
 import json
 import datetime
 from tests import BaseTestCase
-from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token,
-    get_jwt_identity,create_refresh_token
-)
+
 class Tests_Requests(BaseTestCase):
 
     def test_signing_up_users(self):
