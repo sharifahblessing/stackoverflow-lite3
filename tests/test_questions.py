@@ -30,7 +30,7 @@ class Tests_Requests(BaseTestCase):
         """auto generate questions with the help of system  date time"""
         autogenerate_question = str(datetime.datetime.now())
         token = self.get_token()
-        response = self.add_question("my java"+autogenerate_question," java is good"+autogenerate_question,"java",token)
+        response = self.add_question("my programming"+autogenerate_question," programming is good"+autogenerate_question,"programming",token)
         self.assertEqual(response.status_code, 201)
     
 
@@ -38,7 +38,7 @@ class Tests_Requests(BaseTestCase):
         """Tests get question."""
         autogenerate_question = str(datetime.datetime.now())
         token = self.get_token()
-        response = self.add_question("my java"+autogenerate_question," java is good"+autogenerate_question,"java",token)
+        response = self.add_question("my programming"+autogenerate_question," programming is good"+autogenerate_question,"programming",token)
         response = self.get_question()
         self.assertEqual(response.status_code, 200)
 
@@ -46,7 +46,7 @@ class Tests_Requests(BaseTestCase):
         """Tests get single question."""
         autogenerate_question = str(datetime.datetime.now())
         token = self.get_token()
-        response = self.add_question("my java"+autogenerate_question," java is good"+autogenerate_question,"java",token)
+        response = self.add_question("my programming"+autogenerate_question," programming is good"+autogenerate_question,"programming",token)
         response = self.get_one_question(1)
         self.assertEqual(response.status_code, 200)
 
@@ -54,7 +54,7 @@ class Tests_Requests(BaseTestCase):
         """Tests delete single question problem."""
         autogenerate_question = str(datetime.datetime.now())
         token = self.get_token()
-        response = self.add_question("my java"+autogenerate_question," java is good"+autogenerate_question,"java",token)
+        response = self.add_question("my programming"+autogenerate_question," programming is good"+autogenerate_question,"programming",token)
         response = self.delete_one_question(1)
         self.assertEqual(response.status_code, 400)
    
@@ -63,7 +63,7 @@ class Tests_Requests(BaseTestCase):
         """Tests update answer."""
         autogenerate_question = str(datetime.datetime.now())
         token = self.get_token()
-        response = self.add_question("my java"+autogenerate_question," java is good"+autogenerate_question,"java",token)
+        response = self.add_question("my programming"+autogenerate_question," programming is good"+autogenerate_question,"programming",token)
         response = self.update_answer(1,1,token)
         self.assertEqual(response.status_code, 201)
 

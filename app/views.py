@@ -85,6 +85,7 @@ class UserLogin(Resource):
                     
             if  check_password_hash(user_obj.password, password):
                 token = generate_token(username)
+
                 
                 return make_response(jsonify({"message": "Login successful",
                                             "token": token,
@@ -241,10 +242,17 @@ class SingleQuestion(Resource):
         if decoded["status"] == "Failure":
             return make_response(jsonify({"message": decoded["message"]}),
                                  401)
-
+        owner=decoded["username"]
+        # return owner
+        
+        userid_via_userstable = db.get_by_parameter('userstable','username',owner)
+        user_dict = dict()
+        """get a user_id """
+        user_dict["user_id"]= userid_via_userstable[2]
+        owner_id = user_dict["user_id"]
         try:
 
-            if db.delete_question(owner,questionId):
+            if db.delete_question(owner_id,questionId):
                 return{
                     "message":"delete successful"
                 },202

@@ -1,14 +1,21 @@
 language: python
 python:
-  - "3.6.4"
-
+  - "3.6"
+# command to install dependencies
 install:
-  - pip install -r requirements.txt
-  - pip install pytest pytest-cov
+  - pip3 install -r requirements.txt
+  - pip3 install coveralls
 
+services:
+  - postgresql
+
+before_script:
+  - psql -c 'create database stackoverflow_db;' -U postgres
+  - psql -c 'create database stackoverflow_db_tests;' -U postgres
+  
 # command to run tests
 script:
-  - pytest --cov=app/
+  -  pytest tests  -v --cov=app
 
 after_success:
-  - coveralls
+- coveralls

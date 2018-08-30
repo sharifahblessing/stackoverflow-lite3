@@ -63,14 +63,14 @@ class Database:
         self.cursor.execute(insertquestion_cmd )
         self.connection.commit()
 
-    def delete_question(self,owner,questionid):
-        """delete question"""
+    def delete_question(self,owner_id,questionid):
+        """delete question"""        
         selected_quest_statement ="SELECT * FROM questionstable WHERE questionid={};".format(questionid)
         self.cursor.execute(selected_quest_statement)
         selected_quest=self.cursor.fetchone()
         self.connection.commit()
         author_id = selected_quest[1]        
-        if author_id == owner:
+        if author_id == owner_id:
             deletequestion_cmd = "DELETE FROM questionstable WHERE questionid='{}';".format(questionid)
             self.cursor.execute(deletequestion_cmd)
             self.connection.commit()
