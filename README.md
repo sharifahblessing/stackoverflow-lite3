@@ -3,6 +3,7 @@ StackOverflow-lite is a platform where people can ask questions and provide answ
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/d4fd37aec7beb4c5ca1a/maintainability" )](https://codeclimate.com/github/sharifahblessing/stackoverflow-lite3/maintainability)  
 [![Build Status](https://travis-ci.org/sharifahblessing/stackoverflow-lite3.svg?branch=challenge3)](https://travis-ci.org/sharifahblessing/stackoverflow-lite3)  
+[![Coverage Status](https://coveralls.io/repos/github/sharifahblessing/stackoverflow-lite3/badge.svg?branch=challenge3)](https://coveralls.io/github/sharifahblessing/stackoverflow-lite3?branch=challenge3)
 
 StackOverflow-lite is a platform where people can ask questions and provide answers.  
 
