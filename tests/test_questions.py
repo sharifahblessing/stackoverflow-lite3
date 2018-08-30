@@ -1,84 +1,71 @@
 import json
-
+import datetime
 from tests import BaseTestCase
-
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity,create_refresh_token
+)
 class Tests_Requests(BaseTestCase):
-    
-      
-   
-    """Test for questions"""
-    def test_question_submission_successfully(self):
-        """Tests when the questions  are submitted successfully"""
+
+    def test_signing_up_users(self):
+        """Tests when user signs up"""
         with self.client:
-    
-            response = self.add_question("1","hello","hello world","java","kenneth")
+            """auto generate usernames with the help of system  date time"""
+            autogenerate_usernames = str(datetime.datetime.now())
+            response = self.signUp('sharifah','sharifah'+autogenerate_usernames, '123456789')
+            """getting the response  from data"""
             self.assertEqual(response.status_code, 201)
-                          
-    def test_get_all_questions(self):
-        """Tests when all question are retrieved successfully"""
-        with self.client:
-            response = self.get_question()
-            self.assertEqual(response.status_code, 200)
-           
+
+    def test_login_user(self):
+         """Tests user when logging in"""
+         """first signup"""
+         self.signUp('sharifah','sharifah', '123456789')
+         """Then login"""
+         response = self.Login('sharifah','123456789')
+         """getting the response  from data"""
+         self.assertEqual(response.status_code, 200)
+
+    def test_add_questions(self):
+        """Tests when entering an question."""
+        """auto generate questions with the help of system  date time"""
+        autogenerate_question = str(datetime.datetime.now())
+        token = self.get_token()
+        response = self.add_question("my java"+autogenerate_question," java is good"+autogenerate_question,"java",token)
+        self.assertEqual(response.status_code, 201)
+    
+
+    def test_get_questions(self):
+        """Tests get question."""
+        autogenerate_question = str(datetime.datetime.now())
+        token = self.get_token()
+        response = self.add_question("my java"+autogenerate_question," java is good"+autogenerate_question,"java",token)
+        response = self.get_question()
+        self.assertEqual(response.status_code, 200)
+
     def test_get_single_question(self):
+        """Tests get single question."""
+        autogenerate_question = str(datetime.datetime.now())
+        token = self.get_token()
+        response = self.add_question("my java"+autogenerate_question," java is good"+autogenerate_question,"java",token)
+        response = self.get_one_question(1)
+        self.assertEqual(response.status_code, 200)
 
-       """Tests when single question are retrieved successfully"""
-       with self.client:
-           
-            """first insert a question"""
-            response = self.add_question("1","hello","hello world","java","kenneth")
-            self.assertEqual(response.status_code, 201)
-            """then get a specific question"""
-            response = self.get_one_question(1)
-            self.assertEqual(response.status_code, 200)
-
-    def test_no_single_question(self):
-    
-       """Tests when no single question are retrieved successfully"""
-       with self.client:
-           
-            """first insert a question"""
-            response = self.add_question("1","hello","hello world","java","kenneth")
-            self.assertEqual(response.status_code, 201)
-            """then get a specific question"""
-            response = self.get_one_question(2)
-            self.assertEqual(response.status_code, 404)
-
-    def test_answer_question(self):
-        
-       """Tests when posted answer"""
-       with self.client:
-           
-            """first insert a question"""
-            response = self.add_question("1","hello","hello world","java","kenneth")
-            self.assertEqual(response.status_code, 201)
-            """then get a specific question to answer"""
-            response = self.post_answer(1,"1","try removing errors")
-            self.assertEqual(response.status_code, 201)
-
-    def test_no_question_for_your_answer(self):
-        
-       """Tests when no question for posted answer"""
-       with self.client:
-           
-            """first insert a question"""
-            response = self.add_question("1","hello","hello world","java","kenneth")
-            self.assertEqual(response.status_code, 201)
-            """then get a specific question"""
-            response = self.post_answer(23,"1","try removing errors")
-            self.assertEqual(response.status_code, 404)
-
-    def test_question_duplicates(self):
-        
-       """Tests question duplicates"""
-       with self.client:
-           
-            """first insert a question"""
-            self.add_question("1","hello","hello world","java","kenneth")
-            response = self.add_question("1","hello","hello world","java","kenneth")
-            self.assertEqual(response.status_code, 409)
-          
-            
-
-
+    def test_delete_single_question_problem(self):
+        """Tests delete single question problem."""
+        autogenerate_question = str(datetime.datetime.now())
+        token = self.get_token()
+        response = self.add_question("my java"+autogenerate_question," java is good"+autogenerate_question,"java",token)
+        response = self.delete_one_question(1)
+        self.assertEqual(response.status_code, 400)
    
+    def test_update_answer(self):
+
+        """Tests update answer."""
+        autogenerate_question = str(datetime.datetime.now())
+        token = self.get_token()
+        response = self.add_question("my java"+autogenerate_question," java is good"+autogenerate_question,"java",token)
+        response = self.update_answer(1,1,token)
+        self.assertEqual(response.status_code, 201)
+
+
+    

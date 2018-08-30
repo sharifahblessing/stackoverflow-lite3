@@ -1,13 +1,15 @@
 import psycopg2
 from app.models import User_model,Question_model,Answer_model
+from app.config import configconnection
+import os
+
 
 class Database:
 
-    def __init__(self):
-        self.connection = psycopg2.connect(
-            database="stackoverflow_db", user="postgres",  password="1234",host="localhost", port="5432"
-        )
-        self.cursor = self.connection.cursor()
+    connection = configconnection() 
+    cursor = connection.cursor()
+
+  
     
     def create_db_tables(self):
         """creates all the tables for the db"""
@@ -29,7 +31,7 @@ class Database:
         
         self.cursor.execute(create_table)
         self.connection.commit()
-        self.connection.close()
+       
 
     def insert_user_data(self,name, username, password ):
         """insert user"""
